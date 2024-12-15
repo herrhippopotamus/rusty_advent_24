@@ -1,25 +1,45 @@
+use anyhow::Result;
+use lazy_static::lazy_static;
+use regex::Regex;
 use std::collections::HashMap;
 
-use anyhow::Result;
-
-pub fn day_1() -> Result<(i32, i32)> {
-    let puzzle = puzzle();
-
-    let lines = puzzle
+#[allow(dead_code)]
+fn parse_numbers(puzzle: &str) -> (Vec<i32>, Vec<i32>) {
+    puzzle
         .lines()
         .map(|line| line.split_whitespace())
         .map(|mut ints| {
             let x: i32 = ints.next().unwrap().parse().unwrap();
             let y: i32 = ints.next().unwrap().parse().unwrap();
             (x, y)
-        });
+        })
+        .fold(
+            (Vec::with_capacity(1000), Vec::with_capacity(1000)),
+            |(mut xs, mut ys), (x, y)| {
+                xs.push(x);
+                ys.push(y);
+                (xs, ys)
+            },
+        )
+}
 
-    let mut xs = Vec::with_capacity(1000);
-    let mut ys = Vec::with_capacity(1000);
-    for (x, y) in lines.into_iter() {
-        xs.push(x);
-        ys.push(y);
-    }
+// regex approach seems to be less efficient
+lazy_static! {
+    static ref RE: Regex = Regex::new(r"\d+").unwrap();
+}
+#[allow(dead_code)]
+fn parse_numbers_regex(puzzle: &str) -> (Vec<i32>, Vec<i32>) {
+    let numbers = RE
+        .find_iter(puzzle)
+        .map(|mat| mat.as_str().parse::<i32>().unwrap())
+        .collect::<Vec<_>>();
+    numbers.chunks(2).map(|chunk| (chunk[0], chunk[1])).unzip()
+}
+
+pub fn day_1() -> Result<(i32, i32)> {
+    let puzzle = puzzle();
+
+    let (mut xs, mut ys) = parse_numbers(puzzle);
 
     xs.sort();
     ys.sort();
