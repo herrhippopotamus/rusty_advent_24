@@ -1,0 +1,16 @@
+[package]
+name = "aoc"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1.0"
+
+
+[lib]
+name = "aoc"
+path = "src/lib/lib.rs"
+
+[[bin]]
+name = "client"
+path = "src/bin/client.rs"
